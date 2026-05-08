@@ -1,7 +1,7 @@
 <div id="<?php awe_widget_id( $weather ); ?>" class="<?php echo $background_classes ?>" <?php echo $inline_style; ?>>
 	
 	<?php if($weather->background_image) { ?>
-	<div class="awesome-weather-cover" style="background-image: url(<?php echo $weather->background_image; ?>);">
+	<div class="awesome-weather-cover" style="background-image: url(<?php echo esc_url($weather->background_image); ?>);">
 	<div class="awesome-weather-darken">
 	<?php } ?>
 	

@@ -5,7 +5,7 @@ Plugin URI: https://halgatewood.com/awesome-weather
 Description: A weather widget that actually looks cool
 Author: Hal Gatewood
 Author URI: https://www.halgatewood.com
-Version: 3.0
+Version: 3.0.3
 Text Domain: awesome-weather
 Domain Path: /languages
 
@@ -127,7 +127,8 @@ function awesome_weather_ajax( $atts )
 	// OUTPUT A WRAPPER
 	ob_start();
 	
-	echo '<div id="awe-ajax-' . $atts->id .'" class="awe-ajax-' . $atts->id .' awe-weather-ajax-wrap" style="' . $inline_style .'">';
+	$safe_ajax_id = esc_attr($atts->id);
+	echo '<div id="awe-ajax-' . $safe_ajax_id . '" class="awe-ajax-' . $safe_ajax_id . ' awe-weather-ajax-wrap" style="' . esc_attr($inline_style) . '">';
 	if( $show_loader ) echo '<div class="awe-loading"><i class="wi ' . apply_filters('awesome_weather_loader', 'wi-day-sunny') . '"></i></div>';
 	echo '</div>';
 	echo '<script type="text/javascript"> jQuery(document).ready(function() { awe_ajax_load(' . json_encode($atts) . '); }); </script>';
@@ -517,11 +518,11 @@ function awesome_weather_logic( $atts )
 	
 	// PREP INLINE STYLE
 	$inline_style = "";
-	if($weather->inline_style != '') { $inline_style = " style=\"{$weather->inline_style}\""; }
-	
-	
+	if($weather->inline_style != '') { $inline_style = ' style="' . esc_attr($weather->inline_style) . '"'; }
+
+
 	// PREP BACKGROUND CLASSES
-	$background_classes = @implode( ' ', apply_filters( 'awesome_weather_background_classes', $weather->background_classes ));
+	$background_classes = esc_attr( @implode( ' ', apply_filters( 'awesome_weather_background_classes', $weather->background_classes ) ) );
 	
 	
 	// CREATE SHORT VARIABLES TO WORK WITH IN TEMPLATES
@@ -529,7 +530,10 @@ function awesome_weather_logic( $atts )
 	if( isset($weather->data['forecast']) ) $weather_forecast = (array) $weather->data['forecast'];
 	
 	
-	// GET TEMPLATE 
+	// ESCAPE HEADER TITLE FOR SAFE OUTPUT
+	$header_title = esc_html($header_title);
+
+	// GET TEMPLATE
 	ob_start();
 	
 	// IF WE HAVE AN ERROR
@@ -547,7 +551,7 @@ function awesome_weather_logic( $atts )
 		$json->ajaxurl = admin_url('admin-ajax.php');
 		echo "<script type=\"text/javascript\">
 					if( typeof awe == 'undefined') { var awe = []; }
-					awe['awe_weather_widget_json_{$weather->id}'] = " . json_encode($json) . ";
+					awe[" . json_encode('awe_weather_widget_json_' . $weather->id) . "] = " . json_encode($json) . ";
 			</script>";
 	}
 	
@@ -676,7 +680,7 @@ function awe_widget_id( &$weather, $rtn = false )
 	
 	// RETURN DATA OR ECHO
 	if( $rtn ) return $weather->id;
-	else echo $weather->id;
+	else echo esc_attr($weather->id);
 }
 
 
